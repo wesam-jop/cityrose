@@ -625,6 +625,7 @@
 
         let siteData = null;
         let categoriesCache = [];
+        let isFallbackMode = false;
 
         function setText(id, value) {
             const el = byId(id);
@@ -660,6 +661,16 @@
             const digits = String(phone || "").replace(/\D/g, "");
             if (!digits) return "#";
             return "https://wa.me/" + digits;
+        }
+
+        function slugifyArabic(text) {
+            return String(text || "")
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, "-")
+                .replace(/[^\u0600-\u06FF\w-]/g, "")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
         }
 
         function applySite(site) {
@@ -719,6 +730,51 @@
                 throw new Error(hint);
             }
             return res.json();
+        }
+
+        async function loadFallbackMenu() {
+            const res = await fetch("./meals-menu.json", {
+                headers: { Accept: "application/json" },
+            });
+
+            if (!res.ok) {
+                throw new Error("تعذّر تحميل meals-menu.json (HTTP " + res.status + ")");
+            }
+
+            const raw = await res.json();
+            const entries = Object.entries(raw || {});
+
+            const categories = entries.map(([name, products], index) => {
+                const safeProducts = Array.isArray(products) ? products : [];
+                const fallbackProducts = safeProducts.map((item, pIndex) => ({
+                    id: "fallback-" + index + "-" + pIndex,
+                    name: item?.name || "طبق",
+                    price: Number(item?.price ?? 0),
+                    image_url: null,
+                    short_description: "",
+                    compare_at_price: null,
+                }));
+
+                return {
+                    id: "fallback-cat-" + index,
+                    name,
+                    slug: slugifyArabic(name) || ("category-" + index),
+                    description: "بيانات محلية احتياطية",
+                    image_url: null,
+                    published_products_count: fallbackProducts.length,
+                    fallback_products: fallbackProducts,
+                };
+            });
+
+            return {
+                site: {
+                    site_name: "سيتي روز",
+                    site_description: "تم عرض القائمة من ملف محلي احتياطي",
+                    hero_subtitle: "الوضع الاحتياطي مفعّل — البيانات من ملف meals-menu.json",
+                    currency_symbol: "$",
+                },
+                categories,
+            };
         }
 
         function renderCategories(categories) {
@@ -804,6 +860,15 @@
             document.body.style.overflow = "hidden";
 
             try {
+                const fallbackCategory = categoriesCache.find((cat) => cat.slug === slug);
+                if (isFallbackMode && fallbackCategory) {
+                    const symbol = (siteData && siteData.currency_symbol) || "$";
+                    const products = fallbackCategory.fallback_products || [];
+                    modalSubtitle.textContent = products.length + " طبق في هذا القسم";
+                    modalBody.innerHTML = renderProducts(products, symbol);
+                    return;
+                }
+
                 const data = await apiGet("/api/menu/categories/" + encodeURIComponent(slug) + "/products?per_page=200&sort=price_asc");
                 const symbol = (siteData && siteData.currency_symbol) || "$";
                 const total = data.meta?.total ?? data.products?.length ?? 0;
@@ -835,17 +900,28 @@
 
             try {
                 const data = await apiGet("/api/menu");
+                isFallbackMode = false;
                 applySite(data.site || {});
                 categoriesCache = data.categories || [];
                 renderCategories(categoriesCache);
             } catch (err) {
-                const detail = err && err.message ? err.message : "";
-                content.innerHTML =
-                    '<div class="state-box error">' +
-                    "<p><strong>تعذّر الاتصال بالـ API</strong></p>" +
-                    apiConnectionHelp(detail) +
-                    "</div>";
                 console.error(err);
+
+                try {
+                    const fallbackData = await loadFallbackMenu();
+                    isFallbackMode = true;
+                    applySite(fallbackData.site || {});
+                    categoriesCache = fallbackData.categories || [];
+                    renderCategories(categoriesCache);
+                } catch (fallbackErr) {
+                    const detail = fallbackErr && fallbackErr.message ? fallbackErr.message : "";
+                    content.innerHTML =
+                        '<div class="state-box error">' +
+                        "<p><strong>تعذّر الاتصال بالـ API</strong></p>" +
+                        apiConnectionHelp(detail) +
+                        "</div>";
+                    console.error(fallbackErr);
+                }
             }
         }
 
