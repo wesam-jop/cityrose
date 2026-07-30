@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سِدر — منتجات غذائية طبيعية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#1A1510",
+            soil: "#2C241C",
+            leaf: "#3E6B4A",
+            cream: "#F5F1E8",
+            sand: "#E6DFD0",
+            honey: "#D4A017",
+            mute: "#8A7F6E",
+          },
+          fontFamily: {
+            display: ['"Reem Kufi"', "sans-serif"],
+            body: ['"IBM Plex Sans Arabic"', "sans-serif"],
+          },
+          keyframes: {
+            rise: {
+              "0%": { opacity: "0", transform: "translateY(28px)" },
+              "100%": { opacity: "1", transform: "translateY(0)" },
+            },
+            drift: {
+              "0%, 100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-10px)" },
+            },
+            lineGrow: {
+              "0%": { transform: "scaleX(0)" },
+              "100%": { transform: "scaleX(1)" },
+            },
+          },
+          animation: {
+            rise: "rise 0.9s ease-out both",
+            "rise-delay": "rise 0.9s ease-out 0.15s both",
+            "rise-delay-2": "rise 0.9s ease-out 0.3s both",
+            drift: "drift 7s ease-in-out infinite",
+            "line-grow": "lineGrow 1s ease-out 0.4s both",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1A1510;
+      --soil: #2C241C;
+      --leaf: #3E6B4A;
+      --cream: #F5F1E8;
+      --sand: #E6DFD0;
+      --honey: #D4A017;
+      --mute: #8A7F6E;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    .font-display { font-family: "Reem Kufi", sans-serif; }
+
+    .hero-plane {
+      background:
+        linear-gradient(115deg, rgba(26, 21, 16, 0.82) 0%, rgba(44, 36, 28, 0.55) 42%, rgba(26, 21, 16, 0.25) 100%),
+        url("https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=2000&q=80") center/cover no-repeat;
+    }
+
+    .noise {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .nav-link { position: relative; }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 2px;
+      background: var(--honey);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link:focus-visible::after {
+      transform: scaleX(1);
+    }
+
+    .product-media {
+      overflow: hidden;
+    }
+
+    .product-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+
+    .product-item:hover .product-media img {
+      transform: scale(1.06);
+    }
+
+    .filter-btn.active {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .product-panel[hidden] {
+      display: none !important;
+    }
+
+    .filters-scroll {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .filters-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    #mobile-nav.open {
+      display: flex;
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+  <!-- Header -->
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-ink/80 backdrop-blur-md">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4 md:px-8">
+      <a href="#top" class="font-display shrink-0 text-xl font-semibold tracking-wide text-cream sm:text-2xl">سِدر</a>
+      <nav class="hidden items-center gap-8 text-sm text-cream/85 md:flex">
+        <a href="#services" class="nav-link">خدماتنا</a>
+        <a href="#products" class="nav-link">منتجاتنا</a>
+        <a href="#social" class="nav-link">تواصل</a>
+      </nav>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="#social" class="hidden bg-honey px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-cream sm:inline-block">
+          اطلب الآن
+        </a>
+        <button id="menu-toggle" type="button" class="inline-flex h-10 w-10 items-center justify-center border border-cream/25 text-cream md:hidden" aria-expanded="false" aria-controls="mobile-nav" aria-label="فتح القائمة">
+          <svg class="menu-icon h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="close-icon hidden h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="hidden flex-col gap-1 border-t border-white/10 bg-ink px-4 py-4 md:hidden">
+      <a href="#services" class="mobile-link py-3 text-cream/90">خدماتنا</a>
+      <a href="#products" class="mobile-link py-3 text-cream/90">منتجاتنا</a>
+      <a href="#social" class="mobile-link py-3 text-cream/90">تواصل</a>
+      <a href="#social" class="mt-2 bg-honey px-4 py-3 text-center text-sm font-semibold text-ink">اطلب الآن</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero-plane relative min-h-[100svh] overflow-hidden text-cream">
+      <div class="noise pointer-events-none absolute inset-0"></div>
+      <div class="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-16 pt-28 sm:px-5 sm:pb-20 sm:pt-32 md:px-8 md:pb-28">
+        <p class="font-display animate-rise text-4xl font-semibold leading-none sm:text-5xl md:text-7xl lg:text-8xl">سِدر</p>
+        <h1 class="mt-5 max-w-2xl animate-rise-delay text-xl font-medium leading-relaxed sm:mt-6 sm:text-2xl md:text-3xl">
+          مذاق الطبيعة كما يجب أن يكون
+        </h1>
+        <p class="mt-3 max-w-lg animate-rise-delay-2 text-sm leading-7 text-cream/80 sm:mt-4 sm:text-base md:text-lg">
+          عسل، تمور، وزيوت مختارة من أفضل المصادر — نختار بعناية ونوصّل طزاجة تليق بسفرتك.
+        </p>
+        <div class="mt-8 flex animate-rise-delay-2 flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+          <a href="#products" class="bg-honey px-6 py-3.5 text-center text-sm font-semibold text-ink transition hover:bg-cream sm:px-7">
+            تصفّح المنتجات
+          </a>
+          <a href="#services" class="border border-cream/40 px-6 py-3.5 text-center text-sm font-medium text-cream transition hover:border-honey hover:text-honey sm:px-7">
+            لماذا سِدر؟
+          </a>
+        </div>
+        <div class="mt-10 h-px origin-right animate-line-grow bg-gradient-to-l from-honey via-sand/50 to-transparent sm:mt-14"></div>
+      </div>
+      <div class="pointer-events-none absolute bottom-10 left-8 hidden h-24 w-24 animate-drift rounded-full border border-honey/50 lg:block"></div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="relative overflow-hidden bg-cream py-16 sm:py-24 md:py-32">
+      <div class="pointer-events-none absolute -left-20 top-10 h-72 w-72 rounded-full bg-sand/80 blur-3xl"></div>
+      <div class="relative mx-auto max-w-6xl px-4 sm:px-5 md:px-8">
+        <div class="reveal max-w-2xl">
+          <p class="text-sm font-medium tracking-widest text-mute">خدماتنا</p>
+          <h2 class="font-display mt-3 text-3xl font-semibold text-ink sm:text-4xl md:text-5xl">من المصدر إلى مائدتك</h2>
+          <p class="mt-3 text-base leading-8 text-soil/75 sm:mt-4 sm:text-lg">
+            ثلاثة التزامات نعيشها يومياً لنقدّم منتجاً غذائياً موثوقاً ولذيذاً.
+          </p>
+        </div>
+
+        <div class="mt-10 divide-y divide-ink/10 border-y border-ink/10 sm:mt-16">
+          <article class="reveal group grid gap-3 py-8 sm:gap-6 sm:py-10 md:grid-cols-[120px_1fr_1.2fr] md:items-start md:gap-10">
+            <span class="font-display text-3xl text-mute transition group-hover:text-leaf sm:text-4xl">01</span>
+            <h3 class="text-xl font-semibold text-ink sm:text-2xl">اختيار المصادر</h3>
+            <p class="leading-8 text-soil/70">
+              نتعاون مع مزارع ونحّالين موثوقين، ونختار المحصول في ذروة نضجه لضمان نكهة أصيلة وجودة ثابتة.
+            </p>
+          </article>
+          <article class="reveal group grid gap-3 py-8 sm:gap-6 sm:py-10 md:grid-cols-[120px_1fr_1.2fr] md:items-start md:gap-10">
+            <span class="font-display text-3xl text-mute transition group-hover:text-leaf sm:text-4xl">02</span>
+            <h3 class="text-xl font-semibold text-ink sm:text-2xl">تعبئة بعناية</h3>
+            <p class="leading-8 text-soil/70">
+              تعبئة نظيفة تحافظ على الطعم والقيمة الغذائية، بعبوات مناسبة للمنزل والضيافة والهدايا.
+            </p>
+          </article>
+          <article class="reveal group grid gap-3 py-8 sm:gap-6 sm:py-10 md:grid-cols-[120px_1fr_1.2fr] md:items-start md:gap-10">
+            <span class="font-display text-3xl text-mute transition group-hover:text-leaf sm:text-4xl">03</span>
+            <h3 class="text-xl font-semibold text-ink sm:text-2xl">توصيل طازج</h3>
+            <p class="leading-8 text-soil/70">
+              شحن سريع داخل المملكة مع تغليف يحمي المنتج، وخيارات جملة للمطاعم والمتاجر.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="bg-soil py-16 text-cream sm:py-24 md:py-32">
+      <div class="mx-auto max-w-6xl px-4 sm:px-5 md:px-8">
+        <div class="reveal flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+          <div class="max-w-xl">
+            <p class="text-sm font-medium tracking-widest text-honey/90">منتجاتنا</p>
+            <h2 class="font-display mt-3 text-3xl font-semibold sm:text-4xl md:text-5xl">مختارات الموسم</h2>
+            <p class="mt-3 text-base leading-8 text-cream/65 sm:mt-4 sm:text-lg">
+              تشكيلة طبيعية جاهزة للطلب — اختر الفئة واستكشف النكهات.
+            </p>
+          </div>
+          <div id="product-filters" class="filters-scroll reveal -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="tablist" aria-label="تصفية المنتجات">
+            <button type="button" class="filter-btn active shrink-0 border border-cream/20 px-4 py-2 text-sm transition hover:border-honey" data-filter="all">الكل</button>
+            <button type="button" class="filter-btn shrink-0 border border-cream/20 px-4 py-2 text-sm transition hover:border-honey" data-filter="honey">عسل</button>
+            <button type="button" class="filter-btn shrink-0 border border-cream/20 px-4 py-2 text-sm transition hover:border-honey" data-filter="dates">تمور</button>
+            <button type="button" class="filter-btn shrink-0 border border-cream/20 px-4 py-2 text-sm transition hover:border-honey" data-filter="oils">زيوت</button>
+          </div>
+        </div>
+
+        <!-- Products side by side -->
+        <div class="mt-10 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:mt-14 lg:grid-cols-3 lg:gap-6">
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="honey">
+            <div class="product-media relative aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=900&q=80" alt="عسل سدر جبلي" loading="lazy" />
+              <span class="absolute right-3 top-3 bg-honey px-2.5 py-1 text-[11px] font-semibold text-ink sm:right-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-xs">الأكثر طلباً</span>
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">عسل · ٥٠٠ غ</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">عسل سدر جبلي</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">٨٩ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                قوام كثيف ونكهة زهرية دافئة من مناحل المرتفعات.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="dates">
+            <div class="product-media aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1606914469633-bd39206ea739?auto=format&fit=crop&w=900&q=80" alt="تمر خلاص فاخر" loading="lazy" />
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">تمور · ١ كغ</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">تمر خلاص فاخر</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">٦٥ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                حلاوة متوازنة ولحم طري — مثالي للضيافة والهدايا.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="oils">
+            <div class="product-media aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=900&q=80" alt="زيت زيتون بكر" loading="lazy" />
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">زيوت · ٧٥٠ مل</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">زيت زيتون بكر</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">٧٩ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                عصره أولى بنكهة عشبية خفيفة للسلطات والطبخ.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="honey">
+            <div class="product-media aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=900&q=80" alt="عسل زهور برية" loading="lazy" />
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">عسل · ٣٥٠ غ</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">عسل زهور برية</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">٥٥ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                مزيج ناعم من رحيق الموسم — خفيف على الشاي والحلويات.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="dates">
+            <div class="product-media aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=900&q=80" alt="تمر عجوة المدينة" loading="lazy" />
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">تمور · ٥٠٠ غ</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">عجوة المدينة</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">٩٥ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                قوام غني ونكهة عميقة للمناسبات والضيافة.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="product-item product-panel reveal group flex h-full flex-col" data-category="oils">
+            <div class="product-media aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?auto=format&fit=crop&w=900&q=80" alt="طقم المائدة" loading="lazy" />
+            </div>
+            <div class="flex flex-1 flex-col border border-t-0 border-cream/10 p-4 sm:p-5 md:p-6">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-xs text-honey/80">تشكيلة · هدية</p>
+                  <h3 class="mt-1.5 text-lg font-semibold leading-snug sm:mt-2 sm:text-xl">طقم المائدة</h3>
+                </div>
+                <p class="shrink-0 text-sm font-semibold text-honey sm:text-base">١٩٩ ر.س</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-7 text-cream/60">
+                عسل وتمور وزيت زيتون في علبة أنيقة للإهداء.
+              </p>
+              <a href="#social" class="mt-4 inline-flex items-center gap-2 text-sm text-honey transition group-hover:gap-3 sm:mt-5">
+                اطلب الآن <span aria-hidden="true">←</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social / Contact -->
+    <section id="social" class="relative overflow-hidden bg-cream py-16 sm:py-24 md:py-32">
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-ink/15 to-transparent"></div>
+      <div class="mx-auto max-w-6xl px-4 sm:px-5 md:px-8">
+        <div class="reveal grid items-end gap-10 md:grid-cols-[1.2fr_1fr] md:gap-12">
+          <div>
+            <p class="text-sm font-medium tracking-widest text-mute">تواصل معنا</p>
+            <h2 class="font-display mt-3 text-3xl font-semibold text-ink sm:text-4xl md:text-5xl">
+              جاهزون لطلبك القادم
+            </h2>
+            <p class="mt-3 max-w-lg text-base leading-8 text-soil/75 sm:mt-4 sm:text-lg">
+              للأفراد أو الجملة — راسلنا عبر قناتك المفضلة وسنرتّب طلبك خلال ساعات العمل.
+            </p>
+            <a href="mailto:order@sidr.food" class="mt-6 inline-block break-all text-lg font-medium text-ink underline decoration-honey decoration-2 underline-offset-8 transition hover:text-leaf sm:mt-8 sm:text-xl">
+              order@sidr.food
+            </a>
+          </div>
+
+          <div class="reveal space-y-0 border-t border-ink/10">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 border-b border-ink/10 py-4 text-base transition hover:bg-sand/60 hover:px-3 sm:py-5 sm:text-lg sm:hover:px-4">
+              <span>إنستغرام</span>
+              <span class="shrink-0 text-sm text-mute sm:text-base">@sidr.food</span>
+            </a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 border-b border-ink/10 py-4 text-base transition hover:bg-sand/60 hover:px-3 sm:py-5 sm:text-lg sm:hover:px-4">
+              <span>إكس</span>
+              <span class="shrink-0 text-sm text-mute sm:text-base">@sidr_food</span>
+            </a>
+            <a href="https://snapchat.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 border-b border-ink/10 py-4 text-base transition hover:bg-sand/60 hover:px-3 sm:py-5 sm:text-lg sm:hover:px-4">
+              <span>سناب شات</span>
+              <span class="shrink-0 text-sm text-mute sm:text-base">sidr.food</span>
+            </a>
+            <a href="https://wa.me/966500000000" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 border-b border-ink/10 py-4 text-base transition hover:bg-sand/60 hover:px-3 sm:py-5 sm:text-lg sm:hover:px-4">
+              <span>واتساب</span>
+              <span class="shrink-0 text-sm text-mute sm:text-base">اطلب مباشرة</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-ink text-cream">
+    <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:gap-10 sm:px-5 sm:py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
+      <div>
+        <p class="font-display text-3xl font-semibold">سِدر</p>
+        <p class="mt-4 max-w-sm leading-8 text-cream/60">
+          شركة منتجات غذائية طبيعية — عسل، تمور، وزيوت مختارة بعناية من أفضل المصادر.
+        </p>
+      </div>
+      <div>
+        <p class="text-sm text-honey/80">تصفّح</p>
+        <ul class="mt-4 space-y-3 text-cream/70">
+          <li><a href="#services" class="hover:text-cream">خدماتنا</a></li>
+          <li><a href="#products" class="hover:text-cream">منتجاتنا</a></li>
+          <li><a href="#social" class="hover:text-cream">تواصل</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-sm text-honey/80">التواجد</p>
+        <ul class="mt-4 space-y-3 text-cream/70">
+          <li>الرياض — التوصيل للمملكة</li>
+          <li>الأحد — الخميس</li>
+          <li>٩ ص — ٦ م</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-cream/45 sm:px-5 md:flex-row md:items-center md:justify-between md:px-8">
+        <p>© 2026 سِدر. جميع الحقوق محفوظة.</p>
+        <p>من الطبيعة إلى مائدتك</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const reveals = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    reveals.forEach((el) => observer.observe(el));
+
+    const filters = document.querySelectorAll(".filter-btn");
+    const panels = document.querySelectorAll(".product-panel");
+
+    filters.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.filter;
+        filters.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        panels.forEach((panel) => {
+          const match = value === "all" || panel.dataset.category === value;
+          panel.hidden = !match;
+        });
+      });
+    });
+
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileNav = document.getElementById("mobile-nav");
+    const menuIcon = menuToggle.querySelector(".menu-icon");
+    const closeIcon = menuToggle.querySelector(".close-icon");
+
+    function setMenuOpen(open) {
+      mobileNav.classList.toggle("open", open);
+      mobileNav.classList.toggle("hidden", !open);
+      menuIcon.classList.toggle("hidden", open);
+      closeIcon.classList.toggle("hidden", !open);
+      menuToggle.setAttribute("aria-expanded", String(open));
+      menuToggle.setAttribute("aria-label", open ? "إغلاق القائمة" : "فتح القائمة");
+    }
+
+    menuToggle.addEventListener("click", () => {
+      setMenuOpen(!mobileNav.classList.contains("open"));
+    });
+
+    mobileNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+  </script>
+</body>
+</html>
